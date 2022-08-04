@@ -1,12 +1,22 @@
 import keyboard
+import json
 import time
 
 
-def renameFile(namefile):
-    keyboard.send('F2')
-    keyboard.send('Backspace')
-    keyboard.write(f'{namefile}')
-    keyboard.send('enter')
+def ChangeStore():
+    Store = input('Insert name store for start (Adidas or Ralf): ')
+    return Store
+
+
+def BindKey(dictStore: dict, Store: str):
+    def renameFile(namefile):
+        keyboard.send('F2')
+        keyboard.send('Backspace')
+        keyboard.write(f'{namefile}')
+        keyboard.send('enter')
+    for k, v in dictStore[Store].items():
+        keyboard.add_hotkey(k, renameFile, args=[v])
+
 
 def renameAll():
     i = 8
@@ -19,37 +29,15 @@ def renameAll():
             break
     keyboard.send('enter')
 
-dictRalf = {
-    'a' : 'Журнал ТО',
-    'q' : 'СН',
-    'z' : 'Чек лист 1',
-    'x' : 'Чек лист 2',
-    'c' : 'Чек лист 3'}
 
-dictAdidas = {
-    'q' : 'Акт',
-    'a' : 'ТО 1',
-    's' : 'ТО 2',
-    'z' : 'ЧЛ 1',
-    'x' : 'ЧЛ 2',
-    'd' : 'Приемники 1',
-    'f' : 'Приемники 2',
-    'e' : 'Приемники 3',
-    'r' : 'Приемники 4',
-    'c' : 'ЧЛ 3',
-    'v' : 'СИЗ 2'
-    }
+with open('dictStore.json', 'r', encoding='UTF-8') as file:
+    dictStore = json.load(file)
 
-# hotkey = dictAdidas
-hotkey = dictRalf
-
-for k,v in hotkey.items():
-    keyboard.add_hotkey(k, renameFile, args = [v])
-
+Store = ChangeStore()
+BindKey(dictStore, Store)
 keyboard.add_hotkey('b', renameAll)
 
 keyforstop = 'n'
-print('Hotkey activate')
-print(f'Press "{keyforstop}" for end program')
+print(f'Hotkey activate \nPress "{keyforstop}" for end program')
 keyboard.wait(keyforstop)
 print('Program end')
